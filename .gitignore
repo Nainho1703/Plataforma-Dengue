@@ -5,4 +5,4 @@ __pycache__/
 data/raw/
 Modelo/outputs/*.csv
 Modelo/outputs/*.html
-Modelo/Casos/
+Modelo/Datos/Casos
