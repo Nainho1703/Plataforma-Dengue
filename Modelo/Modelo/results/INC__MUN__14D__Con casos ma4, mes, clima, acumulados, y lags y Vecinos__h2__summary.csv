@@ -1,2 +1,0 @@
-h,Fold,RMSE_model,R2_model,RMSE_naive_last,R2_naive_last,RMSE_naive_seas,R2_naive_seas,RMSE_macro_model,MAE_macro_model,gain_vs_naive_last
-2,3.0,30.18,-2.536,52.205,-0.93,,,26.952,14.378,0.422
