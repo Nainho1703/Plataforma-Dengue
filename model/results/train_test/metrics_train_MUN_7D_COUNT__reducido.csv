@@ -1,0 +1,3 @@
+Modelo,RMSE_cv_mean,MAE_cv_mean,R2_cv_mean,RMSE_model
+XGB-tuned,1.0097,0.8019,0.9014,1.0097
+HGBR-MSE,1.0795,0.8181,0.8974,1.0795

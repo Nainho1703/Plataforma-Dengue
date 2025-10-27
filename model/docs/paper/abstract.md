@@ -1,0 +1,1 @@
+<!-- ChatGPT Research: escribe un resumen (150–250 palabras) basado SOLO en este repo y las fuentes citadas. -->

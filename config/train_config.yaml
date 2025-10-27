@@ -1,0 +1,14 @@
+# Configuración principal para entrenamiento de modelos
+# ------------------------------------------------------
+
+models: [XGB-tuned, HGBR-MSE]     # nombres definidos en tu diccionario 'models'
+grids: [MUN]                      # opciones espaciales o niveles (MUN, VM, 1KM, etc.)
+dates: [14D, 7D]                  # agregaciones temporales
+targets: [COUNT]                  # variables objetivo (ej: COUNT, INC)
+features: ["re:Vecinos|Clima"]    # sets de features (pueden ser regex o nombres exactos)
+horizons: [1, 2, 3, 4]            # horizontes de predicción
+outdir: results                   # carpeta donde guardar resultados (folds, métricas, etc.)
+
+# Parámetros opcionales
+seed: 42                          # semilla para reproducibilidad
+cv_splits: 5                      # cantidad de folds para validación cruzada

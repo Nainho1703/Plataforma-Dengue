@@ -1,0 +1,1 @@
+<!-- ChatGPT Research: resume model/results/metrics.csv y predicciones_h/*summary.csv; inserta figuras de model/results/figs/*.png con pies claros. Identifica que periodo temporal de predicción es mejor, 14D es bueno, dado que permite buena planificación-->

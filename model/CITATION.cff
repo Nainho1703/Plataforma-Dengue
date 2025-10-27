@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: If you use this repo, please cite it.
+title: Plataforma-Dengue: predicción de brotes en Villa María
+authors:
+  - family-names: Garcia
+    given-names: Ignacio
+    orcid: "https://orcid.org/0009-0000-0062-1526"
+version: "0.1.0"
+date-released: 2025-03-01
+

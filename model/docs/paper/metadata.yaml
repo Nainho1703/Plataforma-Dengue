@@ -1,0 +1,27 @@
+title: "Predicción de brotes de dengue en Villa María (Argentina)"
+version: "0.1.0"
+date: "2025-09-29"
+
+authors:
+  - name: "Ignacio García"
+    affiliation: "Isglobal, Barcelona, España"
+  - name: "Leonardo Lopéz"
+    affiliation: "Isglobal, Barcelona, España"
+affiliations:
+  A1: "Isglobal, Barcelona, España"
+  A2: "Municipio Villa María, Cordoba, Argentina"
+
+keywords: ["dengue","predicción de brotes","series temporales","machine learning","ERA5-Land","Argentina"]
+
+# Artefactos para que Research los use/cite
+artifacts:
+  metrics: "model/results/metrics.csv"
+  figures: "model/results/figs/*.png"
+  horizons: "model/results/predicciones_h/*summary.csv"
+
+# Inventario de datos (pistas, no contenido del paper)
+data_inventory:
+  climate: "Copernicus ERA5-Land (NetCDF) en model/climate_data/"
+  epidemiology: "SNVS (agregado/anonimizado) en model/data/raw/"
+  sociodemographic: "Centro Estadístico Villa María en model/data/*"
+license: "MIT (código); datos según licencias de sus proveedores"

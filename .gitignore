@@ -1,0 +1,26 @@
+# Python / Jupyter
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Bases de datos locales
+*.db
+*.sqlite
+
+# Ignorar TODO el contenido de raw (pero mantener la carpeta)
+model/data/raw/**
+!model/data/raw/.gitkeep
+!model/data/raw/.placeholder
+
+# Si tienes otras "raw" en cualquier lado
+**/raw/**
+
+# Directorios del proyecto que no quieres versionar
+backend/**
+frontend/**
+varios/**
+
+# Ficheros sueltos
+todo's.lnk
+todo's
+.venv/
