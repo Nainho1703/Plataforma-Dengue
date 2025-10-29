@@ -3,7 +3,7 @@
 
 # Corroborar si este es mas rapido al no seleccionar días separados
 
-# In[ ]:
+# In[1]:
 
 
 # from pathlib import Path
@@ -25,7 +25,7 @@
 # df_clima
 
 
-# In[1]:
+# In[2]:
 
 
 # DB_PATH = BASE_DIR.parent / "backend" / "data" / "mi_base_de_datos5.db"
@@ -73,7 +73,7 @@
 # conn.commit()
 
 
-# In[2]:
+# In[3]:
 
 
 # import cdsapi
@@ -111,7 +111,7 @@
 
 
 
-# In[ ]:
+# In[4]:
 
 
 import os, cdsapi, calendar, time
@@ -207,7 +207,7 @@ for y in range(START_YEAR, END_YEAR + 1):
 
 
 
-# In[ ]:
+# In[5]:
 
 
 import os, zipfile
@@ -405,20 +405,20 @@ for y in range(START_YEAR, END_YEAR + 1):
             df_final=pd.concat([df_final,ds])
 
 
-# In[5]:
+# In[6]:
 
 
 df_final.drop("number",axis=1,inplace=True)
 
 
-# In[6]:
+# In[7]:
 
 
 import shutil, os
 shutil.rmtree(r"downloads_era5land_0p1_test\_unzip", ignore_errors=True)
 
 
-# In[11]:
+# In[8]:
 
 
 from pathlib import Path
@@ -454,7 +454,7 @@ ensure_table(df_final)      # 0) crea "climate_data" si no existe
 write_df(df_final)          # 1) mete el dataframe ahí
 
 
-# In[ ]:
+# In[9]:
 
 
 def drop_tables(tables, db_path=DB_PATH):

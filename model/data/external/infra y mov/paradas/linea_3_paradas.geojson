@@ -1,0 +1,9 @@
+{
+"type": "FeatureCollection",
+"name": "linea_3_paradas",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "name": "Terminal Omnibus, Villa María, Córdoba, Argentina", "description": null }, "geometry": { "type": "Point", "coordinates": [ -63.2332206, -32.4146405 ] } },
+{ "type": "Feature", "properties": { "name": "Terminal Omnibus, Villa María, Córdoba, Argentina", "description": null }, "geometry": { "type": "Point", "coordinates": [ -63.2332204, -32.4146408 ] } }
+]
+}

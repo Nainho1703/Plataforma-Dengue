@@ -1,0 +1,15 @@
+{
+"type": "FeatureCollection",
+"name": "linea_4_paradas",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "name": "TERMINAL VILLA MARÍA.", "description": "Final del recorrido. Descanso de conductores ( 5 minutos )," }, "geometry": { "type": "Point", "coordinates": [ -63.2334894, -32.4146684 ] } },
+{ "type": "Feature", "properties": { "name": "PARADA: Santa Fe y Bv. España.", "description": null }, "geometry": { "type": "Point", "coordinates": [ -63.2396769, -32.4073018 ] } },
+{ "type": "Feature", "properties": { "name": "PARADA: Centro de Transferencia.", "description": "Sentido Villa María hacia Villa Nueva." }, "geometry": { "type": "Point", "coordinates": [ -63.2457536, -32.4107532 ] } },
+{ "type": "Feature", "properties": { "name": "PARADA: Radio-Taxi Villa María", "description": null }, "geometry": { "type": "Point", "coordinates": [ -63.2432701, -32.4136276 ] } },
+{ "type": "Feature", "properties": { "name": "PARADA: Colegio Inmac. Concepción.", "description": null }, "geometry": { "type": "Point", "coordinates": [ -63.2457766, -32.4362618 ] } },
+{ "type": "Feature", "properties": { "name": "PARADA: Centro de Transferencia.", "description": "Sentido Villa Nueva hacia Villa María." }, "geometry": { "type": "Point", "coordinates": [ -63.2468757, -32.4094733 ] } },
+{ "type": "Feature", "properties": { "name": "Terminal Omnibus, Villa María, Córdoba, Argentina", "description": null }, "geometry": { "type": "Point", "coordinates": [ -63.2332327, -32.4146265 ] } },
+{ "type": "Feature", "properties": { "name": "Terminal Omnibus, Villa María, Córdoba, Argentina", "description": null }, "geometry": { "type": "Point", "coordinates": [ -63.2332336, -32.4146254 ] } }
+]
+}

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[2]:
 
 
 import pandas as pd
@@ -17,7 +17,7 @@ import os
 pd.set_option('display.max_columns', None) 
 pd.set_option('display.width', None) 
 
-ruta_excel = r"data\raw\Casos Direccion Correcta.xlsx"
+ruta_excel = r"data\raw\casos_procesados\casos_direccion_real.xlsx"
 df0 = pd.read_excel(ruta_excel)
 
 # df_casos=df0.drop(["DIRECCION"],axis=1)
@@ -28,26 +28,14 @@ df00=df0[["DIRECCION","lon","lat","WKT"]].drop_duplicates()
 df00.head()
 
 
-# In[2]:
+# In[6]:
 
 
-df00["lon"].max(),df00["lon"].min(),df00["lat"].max(),df00["lat"].min()
-
-
-# In[3]:
-
-
-df00
-
-
-# In[4]:
-
-
-ruta_excel = r"data\raw\No utiles\notificaciones dengue Villa María 23-24.xlsx"
+ruta_excel = r"data\raw\casos_raw\notificaciones dengue Villa María 23-24.xlsx"
 
 df_0 = pd.read_excel(ruta_excel)
 
-ruta_excel = r"data\raw\No utiles\Notificaciones dengue Villa María 24-25.xlsx"
+ruta_excel = r"data\raw\casos_raw\Notificaciones dengue Villa María 24-25.xlsx"
 
 df_1 = pd.read_excel(ruta_excel)
 
@@ -57,11 +45,17 @@ df_f["DIRECCION"]=df_f["calle_domicilio"]+" "+df_f["numero_domicilio"]+", Villa 
 df_f.head()
 
 
-# In[5]:
+# In[28]:
+
+
+df_f["fis"]
+
+
+# In[30]:
 
 
 # 1. Asegúrate de tener tu DataFrame cargado como df_f
-#    y que tiene las columnas 'fis' y 'fecha_apertura'
+#    y que tiene las columnas 'fis' y 'fecha_apertura'  #fis fecha inicio de sintomas
 
 df_f['fis'] = pd.to_datetime(df_f['fis'], dayfirst=True, errors='coerce')
 df_f['fecha_apertura'] = pd.to_datetime(df_f['fecha_apertura'], dayfirst=True, errors='coerce')
@@ -69,7 +63,7 @@ df_f['fecha_apertura'] = pd.to_datetime(df_f['fecha_apertura'], dayfirst=True, e
 # 2. Calcula la diferencia en días
 df_f['diff_apertura_fis'] = (df_f['fecha_apertura'] - df_f['fis']).dt.days
 df_f['diff_apertura_fis']=df_f['diff_apertura_fis'].fillna(-1)
-df_f.loc[(df_f['diff_apertura_fis'].astype(int)<0)|(df_f['diff_apertura_fis'].astype(int)>10),'fis']=pd.NaT
+df_f.loc[(df_f['diff_apertura_fis'].astype(int)<0)|(df_f['diff_apertura_fis'].astype(int)>10),'fis']=pd.NaT   # si es mas de 10 días se pone como que no hubo
 
 df_f['fis'] = pd.to_datetime(df_f['fis'], dayfirst=True, errors='coerce')
 df_f['fecha_apertura'] = pd.to_datetime(df_f['fecha_apertura'], dayfirst=True, errors='coerce')
@@ -109,7 +103,7 @@ print(f"Diferencia en media: {mean_new - mean_orig:+.2f} días")
 print(f"Diferencia en std:   {std_new  - std_orig:+.2f} días")
 
 
-# In[6]:
+# In[31]:
 
 
 # 3. Parámetros de incubación (sin ajuste por edad/sexo)
@@ -135,7 +129,7 @@ mean_new = df_f['diff_apertura_fis'].mean()
 std_new  = df_f['diff_apertura_fis'].std()
 print(f"Después de estimar picadura: media diff = {mean_new:.2f} d, std = {std_new:.2f} d")
 print(f"Cambio en media = {mean_new - mean_orig:+.2f} d, cambio en std = {std_new - std_orig:+.2f} d")
-df_f2=df_f[["DIRECCION","ideventocaso","sexo","edad_diagnostico","fecha_picadura_estimada","fecha_apertura"]]
+df_f2=df_f[["DIRECCION","ideventocaso","sexo","edad_diagnostico","fecha_picadura_estimada","fecha_apertura","fis"]]
 aj=pd.merge(df_f2,df00,on=["DIRECCION"],how="left") # traigo la información 
 
 aj.loc[~aj["WKT"].isnull()]
@@ -144,7 +138,7 @@ df_casos=aj.copy()
 df_casos.head()
 
 
-# In[7]:
+# In[32]:
 
 
 # agg=df_casos.copy()
@@ -160,7 +154,7 @@ df_casos.head()
 # # agg.to_excel("ok.xlsx")
 
 
-# In[8]:
+# In[33]:
 
 
 # 3) Crea la columna geometry con prioridad: WKT → Point(lon,lat) → None
@@ -212,7 +206,7 @@ gdf_result = gdf_casos_utm.to_crs("EPSG:4326")
 gdf_result.head()
 
 
-# In[11]:
+# In[34]:
 
 
 # 1️⃣ Carga ambas capas
@@ -254,7 +248,7 @@ gdf_casos_utm.to_file("data\interm\casos_con_distancias.geojson", driver="GeoJSO
 gdf_casos_utm.head()
 
 
-# In[12]:
+# In[35]:
 
 
 import geopandas as gpd
@@ -332,7 +326,7 @@ plt.show()
 
 
 
-# In[13]:
+# In[36]:
 
 
 gdf_municerca['geometry_centroid'] = gdf_municerca.geometry.centroid
@@ -354,7 +348,7 @@ df_centroids = gdf_municerca_geo[['Nombre','longitude','latitude']]
 df_centroids.columns=["municerca",'longitude','latitude']
 
 
-# In[14]:
+# In[37]:
 
 
 # 1) Abre la conexión
@@ -382,7 +376,8 @@ conn.close()
 df_clima=df_clima.rename(columns={'time':'date'})
 
 
-# In[15]:
+
+# In[38]:
 
 
 df_clima2=df_clima.copy()
@@ -396,7 +391,7 @@ df_clima2=pd.merge(df_clima2,prom_weather,on=["dia","mes"],how="left")
 df_clima2.head()
 
 
-# In[16]:
+# In[39]:
 
 
 clim_cols_anom=[]
@@ -410,7 +405,7 @@ for ss in clim_cols:
 df_clima2.head()
 
 
-# In[17]:
+# In[49]:
 
 
 import numpy as np
@@ -502,17 +497,17 @@ for c in clim_cols+clim_cols_anom:   # p.ej. ['t2m','d2m','tp','t2m_min','t2m_ma
     else:
         df_clima1 = df_clima1.merge(aux, on=['municerca','date'], how='outer')
 df_clima1.sort_values(by=["date","municerca"])[:30]
+df_clima1.to_csv("data\processed\clima_processed.csv",index=False)
 
 
-
-# In[18]:
+# In[41]:
 
 
 df_clima_=df_clima1.copy()
 df_clima_=df_clima_.rename(columns={'date':'fecha_picadura_estimada'})
 
 
-# In[19]:
+# In[42]:
 
 
 casos_con_muni2=pd.merge(casos_con_muni,df_clima_,on=["municerca","fecha_picadura_estimada"],how="left")
@@ -524,7 +519,7 @@ cols.remove("municerca")
 casos_con_muni2=casos_con_muni2[["municerca"]+cols]
 
 
-# In[20]:
+# In[43]:
 
 
 # df_clima2["date"]=df_clima2["date"].astype(str)
@@ -544,7 +539,7 @@ casos_con_muni2=casos_con_muni2[["municerca"]+cols]
 # df_casos_d.head()
 
 
-# In[24]:
+# In[ ]:
 
 
 casos_con_muni2 = casos_con_muni2.sort_values('fecha_picadura_estimada')
@@ -582,7 +577,7 @@ def add_bucket(df, date_agrup: str):
 def agrup_datos(casos_con_muni2,grilla,date_agrup,target):
 
 
-    sacar = ["DIRECCION",'ideventocaso',"WKT","geometry","fecha_picadura_estimada",'date','fecha_agg','fecha','fecha_apertura']
+    sacar = ["DIRECCION",'ideventocaso',"WKT","geometry","fecha_picadura_estimada",'date','fecha_agg','fecha','fecha_apertura',"fis"]
 
     bset = set(sacar)                     # para membership O(1)
     res = [x for x in cols if x not in bset]
@@ -634,9 +629,10 @@ def agrup_datos(casos_con_muni2,grilla,date_agrup,target):
     return(casos_muni_ms)
 
 
+casos_con_muni2['fecha'].unique()
 
 
-# In[25]:
+# In[45]:
 
 
 # ---------- 1) Features base ----------
@@ -924,7 +920,7 @@ def proc_datos(casos_con_muni2,grilla,date_agrup,target):
     return(df_datos_agg)
 
 
-# In[26]:
+# In[46]:
 
 
 # === usar ===
@@ -939,8 +935,8 @@ grillas=["MUN"]
 # date_agrup = '15D'       # quincenal (1–15 / 16–fin)
 # date_agrup = 'MS'        # mensual
 
-dates_agrup=["7D","14D","MS"]
-date_agrup="14D"
+dates_agrup=["D","7D","14D","MS"]
+# date_agrup="14D"
 
 targets=["COUNT","INC"]
 for t in targets:
@@ -950,7 +946,13 @@ for t in targets:
             df_datos_agg=proc_datos(casos_con_muni2,g,d,t)
 
 
-# In[27]:
+# In[48]:
+
+
+casos_con_muni2.to_csv("data\processed\diario_municerca.csv", index=False)
+
+
+# In[ ]:
 
 
 df_datos_agg
