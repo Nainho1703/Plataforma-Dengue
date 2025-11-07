@@ -29,9 +29,7 @@ data/
 │     └─ municerca/
 ├─ interm/
 ├─ processed/
-└─ raw/
-   ├─ No utiles/
-   └─ arboles virales/
+
 
 docs/
 └─ paper/
@@ -45,16 +43,16 @@ src/
 ├─ 0.- act_clima.py
 ├─ 0.- verificar_direccion.py
 ├─ 1.- preprocesar_datos.py
-├─ 2.- Analisis datos.py
-├─ 3.- model_tf.py
-└─ 3.- modelo_.py
+├─ 2.- analisis datos.py
+├─ 3.- model_ML.py
+└─ 3.- modelo_SEIR.py
 
 0.- act_clima.ipynb
 0.- verificar_direccion.ipynb
 1.- preprocesar_datos.ipynb
-2.- Analisis datos.ipynb
-3.- model_tf.ipynb
-3.- modelo_.ipynb
+2.- analisis datos.ipynb
+3.- model_ML.ipynb
+3.- modelo_SEIR.ipynb
 ```
 
 ## 📦 Instalación paso a paso
@@ -177,9 +175,9 @@ Para reproducir configuraciones completas sin escribir argumentos largos, podés
 Ejemplo: `config/train_config.yaml`
 ```yaml
 models: [XGB-tuned, HGBR-MSE]
-grids: [MUN]
-dates: [14D, 7D]
-targets: [COUNT]
+grids: ["MUN"]
+dates: ["14D", "7D"]
+targets: ["COUNT","INC"]
 features: ["re:Vecinos|Clima"]
 horizons: [1, 2, 3, 4]
 outdir: results
@@ -205,15 +203,3 @@ python model/src/train_cli.py --config config/train_config.yaml --models XGB-tun
 La ejecución requiere experiencia en **Python**, creación de **librerías**, manejo de **repositorios de datos públicos** y trabajo con **datos epidemiológicos/climáticos/ambientales**.
 
 ## Contribuir
-1. **Tests**: `pytest -q`
-2. **Lint**: `ruff check . && ruff format .`
-3. **PR** hacia `feature/product2-libs` con:
-   - Cobertura mínima de tests para nuevos módulos.
-   - Ejemplos en `docs/product2_notes.md`.
-   - Actualización de `CHANGELOG.md`.
-
-## Licencia
-Indica la licencia del código (p. ej., **MIT**). Revisa las licencias de **datos externos** en `docs/data_sources.md`.
-
-## Citar este trabajo
-Si usas estas librerías, por favor cita el proyecto “Plataforma Dengue – Villa María (AR). Producto 2 (Librerías)”.
