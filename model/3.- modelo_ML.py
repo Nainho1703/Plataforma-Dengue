@@ -1,7 +1,26 @@
+# -*- coding: utf-8 -*-
+# Auto-added by exporter: force UTF-8 stdout/stderr when running as .py
+import os, sys
+try:
+    # Python 3.7+: reconfigure disponible en la mayoría de builds
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    else:
+        # Fallback: envolver buffers (evita fallar en Jupyter donde no hay .buffer)
+        import io
+        if hasattr(sys.stdout, "buffer"):
+            sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+        if hasattr(sys.stderr, "buffer"):
+            sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+except Exception:
+    # Nunca romper el script por temas de encoding
+    pass
+
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[2]:
 
 
 # Definicion de features y carga de bases
@@ -106,7 +125,7 @@ def load_data(g,d,t):
     return(df_model,features,splits)
 
 
-# In[2]:
+# In[3]:
 
 
 # Poisson si es que
@@ -230,7 +249,7 @@ class GBQuantileBlend(BaseEstimator, RegressorMixin):
         return (1.0 - self.w_high) * q50 + self.w_high * qhi
 
 
-# In[3]:
+# In[4]:
 
 
 # Evaluación de modelos
@@ -289,7 +308,7 @@ def eval_models(df, features, models, target='casos', splits=None):
     return res, trained[best_name]
 
 
-# In[4]:
+# In[5]:
 
 
 # Definicion Modelos
@@ -401,7 +420,7 @@ models.update({
 
 
 
-# In[5]:
+# In[6]:
 
 
 # Comparación con naive
@@ -600,7 +619,7 @@ def eval_diff_h1(df_base, features, model, use_sample_weight=False):
     return summary, df_folds.round(3), last.round(3), resid
 
 
-# In[6]:
+# In[7]:
 
 
 # ===== ML rolling-origin para comparar con SEIR (misma métrica/ventanas) =====
@@ -749,35 +768,87 @@ for t in targets:
 # In[9]:
 
 
-# === Exportar los mejores modelos y sus features por combinación ===
-import joblib, json, os
+# === Exportar mejores modelos + 1 modelo por horizonte (h=1..4) ===
+import json, joblib
 from pathlib import Path
+from sklearn.base import clone
+from sklearn.impute import SimpleImputer
+import pandas as pd
 
 out_dir = Path("exported_models")
 out_dir.mkdir(parents=True, exist_ok=True)
 
+def load_df(g, d, t):
+    # mismo patrón de tus datos procesados
+    return pd.read_csv(f"data/processed/casos_con_municerca{g}_{d}_{t}.csv")
+
 saved = []
-for t in dic_results:                 # p.ej. "COUNT", "INC"
-    for g in dic_results[t]:          # p.ej. "MUN"
-        for d in dic_results[t][g]:   # p.ej. "14D", "7D"
-            pack = dic_results[t][g][d]
+for t in dic_results:                 # ej. "INC" / "COUNT"
+    for g in dic_results[t]:          # ej. "MUN"
+        for d in dic_results[t][g]:   # ej. "14D"
+            pack  = dic_results[t][g][d]
             model = pack["best_model"]
             feats = pack["best_features"]
+            tag   = f"{g}_{d}_{t}"
 
-            tag = f"{g}_{d}_{t}"      # ejemplo: "MUN_14D_INC"
-            pkl = out_dir / f"model_{tag}.pkl"
+            # 1) guardo features (una vez por combo)
             fea = out_dir / f"features_{tag}.json"
-
-            joblib.dump(model, pkl)
             json.dump(feats, open(fea, "w", encoding="utf-8"))
 
-            saved.append((tag, str(pkl), str(fea)))
+            # 2) (opcional) guardo el modelo base y_t como antes
+            base_pkl = out_dir / f"model_{tag}.pkl"
+            joblib.dump(model, base_pkl)
+            saved.append((tag, str(base_pkl), str(fea)))
 
-print("Modelos exportados:")
+            # 3) entreno y guardo un modelo por horizonte h=1..4
+            df_all = load_df(g, d, t)
+            for h in (1, 2, 3, 4):
+                # requiere tu función existente make_target_h(df, h)
+                dfh = make_target_h(df_all.copy(), h)           # crea target: 'casos_h{h}'
+                X   = dfh[feats]
+                y   = dfh[f"casos_h{h}"].to_numpy()
+
+                imp = SimpleImputer(strategy="median")
+                Ximp = imp.fit_transform(X)
+
+                mdl_h = clone(model)                             # mismo tipo que el best_model
+                mdl_h.fit(Ximp, y)
+
+                pkl_h = out_dir / f"model_{tag}_h{h}.pkl"
+                joblib.dump({"model": mdl_h, "imputer": imp, "features": feats}, pkl_h)
+                saved.append((f"{tag}_h{h}", str(pkl_h), str(fea)))
+
+print("Exportados:")
 for s in saved: print(s)
 
 
 # In[10]:
+
+
+# export_preds.py (ejecutar desde /model)
+import json, joblib, pandas as pd
+from pathlib import Path
+
+def export_preds(g="MUN", d="14D", t="INC", out="../backend/data/preds"):
+    feats = json.load(open(f"exported_models/features_{g}_{d}_{t}.json", encoding="utf-8"))
+    df = pd.read_csv(f"data/processed/casos_con_municerca{g}_{d}_{t}.csv")
+    last = (df.sort_values(["municerca","fecha_agg"])
+              .groupby("municerca", as_index=False).tail(1))
+
+    Path(out).mkdir(parents=True, exist_ok=True)
+    for h in (1,2,3,4):
+        pack = joblib.load(f"exported_models/model_{g}_{d}_{t}_h{h}.pkl")
+        mdl, imp = pack["model"], pack["imputer"]
+        Xte = imp.transform(last[feats])
+        yhat = mdl.predict(Xte)
+        out_df = last[["municerca","fecha_agg"]].copy()
+        out_df[f"pred_h{h}"] = yhat
+        out_df.to_json(f"{out}/pred_semana{h}.json", orient="records", force_ascii=False)
+
+export_preds()
+
+
+# In[11]:
 
 
 a_=pd.DataFrame(all_rows)
@@ -785,13 +856,12 @@ b_=a_.copy()
 a_=a_.loc[(a_["dates"]=="14D")&(a_["target"]=="INC")]
 
 a_=a_.drop(["target","grid","dates","features","RMSE_naive_seas","R2_naive_seas",'model','MAE_macro_model','R2_model','R2_naive_last'],axis=1)
-display(a_)
+
 b_=b_.loc[(b_["dates"]=="14D")&(b_["target"]=="COUNT")]
 b_=b_.drop(["target","grid","dates","features","RMSE_naive_seas","R2_naive_seas",'model','MAE_macro_model','R2_model','R2_naive_last'],axis=1)
-display(b_)
 
 
-# In[11]:
+# In[12]:
 
 
 # === metrics.csv unificado (una fila por combo t/g/d/f/h) ===
@@ -800,7 +870,7 @@ metrics_df.to_csv("results/metrics.csv", index=False)
 print("✅ Escrito: results/metrics.csv  (filas:", len(metrics_df), ")")
 
 
-# In[12]:
+# In[13]:
 
 
 # === Figura pred vs obs para el primer combo con h=1 ===
@@ -862,7 +932,7 @@ else:
     print("⚠️ metrics_df no tiene filas con h==1")
 
 
-# In[13]:
+# In[14]:
 
 
 import numpy as np, pandas as pd
@@ -949,7 +1019,7 @@ def eval_on_outbreaks(df_base, features, model, splits,
     return out, resumen
 
 
-# In[14]:
+# In[15]:
 
 
 for c in df_results["Modelo"][:3]:
@@ -971,7 +1041,7 @@ brotes_m2, res2 = eval_on_outbreaks(df_model, features[f], m2, splits, y_col='ca
 print(res2)
 
 
-# In[15]:
+# In[16]:
 
 
 import numpy as np, pandas as pd
@@ -1072,13 +1142,13 @@ for m in df_results["Modelo"][:3]:
     graph_importance(m,dic_results,g,d,t)
 
 
-# In[16]:
+# In[17]:
 
 
 print(folds_h.columns)
 
 
-# In[17]:
+# In[18]:
 
 
 from pathlib import Path
@@ -1104,22 +1174,38 @@ plt.close()
 print("✅ Guardadas figuras en results/figs/")
 
 
+# In[19]:
+
+
+import joblib, json, pandas as pd
+from sklearn.impute import SimpleImputer
+import numpy as np
+
+def predecir_riesgo_futuro(g="MUN", d="14D", t="INC", semanas=(1,2,3,4)):
+    model = joblib.load(f"exported_models/model_{g}_{d}_{t}.pkl")
+    feats = json.load(open(f"exported_models/features_{g}_{d}_{t}.json"))
+    df = pd.read_csv(f"data/processed/casos_con_municerca{g}_{d}_{t}.csv")
+
+    X = df[feats]
+    imp = SimpleImputer(strategy="median")
+    Ximp = imp.fit_transform(X)
+
+    preds = {}
+    for h in semanas:
+        dfh = df.copy()
+        yhat = model.predict(Ximp)
+        dfh[f"pred_h{h}"] = yhat
+        preds[h] = dfh[["municerca","fecha_agg", f"pred_h{h}"]]
+    return preds
+
+
+preds = predecir_riesgo_futuro()
+for h, dfp in preds.items():
+    dfp.to_json(f"data/pred_semana{h}.json", orient="records", force_ascii=False)
+
+
 # In[ ]:
 
 
-# ==== ejemplo de evaluación ML en rolling-origin (mismas métricas que SEIR) ====
-# elegí el combo que querés comparar
-t_sel, g_sel, d_sel = "INC", "MUN", "14D"
 
-df_model   = dic_results[t_sel][g_sel][d_sel]['df_model']
-best_model = dic_results[t_sel][g_sel][d_sel]['best_model']
-feat_list  = dic_results[t_sel][g_sel][d_sel]['best_features']
-
-ml_scores, order, weeks = eval_rolling_ml(
-    df_model, feat_list, best_model, horizons=(1,2,4), min_hist_weeks=52
-)
-
-ml_scores.to_csv("results/ml_rolling_metrics.csv", index=False)
-print("ML rolling – promedio por horizonte:")
-print(ml_scores.groupby("h")[["poiss","rmse_w","rmse_peak"]].mean().round(3))
 

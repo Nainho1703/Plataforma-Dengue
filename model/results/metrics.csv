@@ -1,17 +1,5 @@
 target,grid,dates,features,h,model,RMSE_model,MAE_macro_model,R2_model,RMSE_naive_last,R2_naive_last,RMSE_naive_seas,R2_naive_seas,gain_vs_naive_last
-COUNT,MUN,14D,"Con casos ma4, mes, clima, acumulados, y lags y Vecinos",1,GB,31.15,11.883,0.077,41.709,-0.014,,,0.253
-COUNT,MUN,14D,"Con casos ma4, mes, clima, acumulados, y lags y Vecinos",2,GB,33.125,14.23,-2.034,59.469,-0.941,,,0.443
-COUNT,MUN,14D,"Con casos ma4, mes, clima, acumulados, y lags y Vecinos",3,GB,41.288,23.136,0.265,74.295,-8.324,,,0.444
-COUNT,MUN,14D,"Con casos ma4, mes, clima, acumulados, y lags y Vecinos",4,GB,41.654,17.664,0.278,70.802,-1.05,,,0.412
-COUNT,MUN,7D,"Con casos ma4, mes, clima, acumulados, y lags y Vecinos",1,XGB-Poisson,10.37,4.922,0.771,17.932,0.447,,,0.422
-COUNT,MUN,7D,"Con casos ma4, mes, clima, acumulados, y lags y Vecinos",2,XGB-Poisson,10.24,4.443,0.735,28.352,-0.238,,,0.639
-COUNT,MUN,7D,"Con casos ma4, mes, clima, acumulados, y lags y Vecinos",3,XGB-Poisson,13.145,6.675,0.268,35.403,-50.653,,,0.629
-COUNT,MUN,7D,"Con casos ma4, mes, clima, acumulados, y lags y Vecinos",4,XGB-Poisson,16.026,7.813,0.481,34.628,-0.715,,,0.537
-INC,MUN,14D,"Con casos ma4, mes, clima, acumulados, y lags y Vecinos",1,HGBR-MSE,28.833,12.373,-0.059,36.351,-0.024,,,0.207
-INC,MUN,14D,"Con casos ma4, mes, clima, acumulados, y lags y Vecinos",2,HGBR-MSE,30.87,14.71,-3.403,52.205,-0.93,,,0.409
-INC,MUN,14D,"Con casos ma4, mes, clima, acumulados, y lags y Vecinos",3,HGBR-MSE,34.448,19.934,0.264,64.488,-8.389,,,0.466
-INC,MUN,14D,"Con casos ma4, mes, clima, acumulados, y lags y Vecinos",4,HGBR-MSE,37.535,15.525,0.148,58.014,-1.086,,,0.353
-INC,MUN,7D,"Con casos ma4, mes, clima, acumulados, y lags y Vecinos",1,GB-BlendQ80-w20,9.568,4.461,0.69,13.956,0.447,,,0.314
-INC,MUN,7D,"Con casos ma4, mes, clima, acumulados, y lags y Vecinos",2,GB-BlendQ80-w20,8.388,4.307,0.757,23.774,-0.255,,,0.647
-INC,MUN,7D,"Con casos ma4, mes, clima, acumulados, y lags y Vecinos",3,GB-BlendQ80-w20,11.139,5.911,0.236,30.21,-49.921,,,0.631
-INC,MUN,7D,"Con casos ma4, mes, clima, acumulados, y lags y Vecinos",4,GB-BlendQ80-w20,15.674,7.367,0.324,28.745,-0.739,,,0.455
+INC,MUN,14D,"Con casos ma4, mes, clima, acumulados, y lags y Vecinos",1,HGBR-MSE,29.224,12.938,-0.119,36.351,-0.024,,,0.196
+INC,MUN,14D,"Con casos ma4, mes, clima, acumulados, y lags y Vecinos",2,HGBR-MSE,31.617,14.457,-5.076,52.205,-0.93,,,0.394
+INC,MUN,14D,"Con casos ma4, mes, clima, acumulados, y lags y Vecinos",3,HGBR-MSE,36.434,20.795,0.226,64.488,-8.389,,,0.435
+INC,MUN,14D,"Con casos ma4, mes, clima, acumulados, y lags y Vecinos",4,HGBR-MSE,37.638,15.839,0.159,58.014,-1.086,,,0.351

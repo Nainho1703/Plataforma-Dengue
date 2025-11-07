@@ -1,7 +1,26 @@
+# -*- coding: utf-8 -*-
+# Auto-added by exporter: force UTF-8 stdout/stderr when running as .py
+import os, sys
+try:
+    # Python 3.7+: reconfigure disponible en la mayoría de builds
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    else:
+        # Fallback: envolver buffers (evita fallar en Jupyter donde no hay .buffer)
+        import io
+        if hasattr(sys.stdout, "buffer"):
+            sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+        if hasattr(sys.stderr, "buffer"):
+            sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+except Exception:
+    # Nunca romper el script por temas de encoding
+    pass
+
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[23]:
 
 
 import sqlite3
@@ -14,9 +33,10 @@ import overpy
 import warnings
 import numpy as np
 import unicodedata
-
+import sys
+import io
 warnings.filterwarnings("ignore")
-
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
 def esta_en_villa_maria(lat, lon):
     return (-33 <= lat <= -29) and (-65 <= lon <= -63)
@@ -258,7 +278,7 @@ def evaluar_direccion(df,columna_direccion="DIRECCION"):
 
 
 
-# In[3]:
+# In[ ]:
 
 
 # if 'df_casos_conf' not in locals():   # existe en el scope local
@@ -396,14 +416,19 @@ df_casos_conf.head()
 
 print(f'utilizando_{label}')
 
+
+
+
+
+# In[10]:
+
+
 ruta_excel_cc = rf"data\raw\casos_procesados\casos_direccion_{label}.xlsx"
 casos_correctos = pd.read_excel(ruta_excel_cc)
 
 
 
-
-
-# In[4]:
+# In[11]:
 
 
 df_sacar=pd.merge(df_casos_conf,casos_correctos[["DIRECCION","WKT"]],on="DIRECCION",how="left")   
@@ -411,11 +436,11 @@ lista=list(casos_correctos.loc[~casos_correctos["WKT"].isnull(),"DIRECCION"]) # 
 df_revisar=df_casos_conf.loc[~df_casos_conf["DIRECCION"].isin(lista)]
 vacios=df_casos_conf.loc[df_casos_conf["DIRECCION"].isnull()]
 print("A confirmar",len(df_revisar),"casos")
-df2=evaluar_direccion(df_revisar)
+df2=evaluar_direccion(df_revisar[:5])
 df2
 
 
-# In[ ]:
+# In[17]:
 
 
 # deps:
@@ -535,9 +560,10 @@ df_casos_conf = add_reverse_geocode_column(
     out_col="DIRECCION_REV",
     user_agent_email="tu_email@dominio.tld"  # <- reemplaza por el tuyo
 )
+df_casos_conf
 
 
-# In[ ]:
+# In[19]:
 
 
 df44=df2.loc[~df2["lon"].isnull()]
@@ -546,20 +572,13 @@ df_final=pd.concat([casos_correctos,df44]).reset_index(drop=True)
 df_final.to_excel(ruta_excel_cc, index=False)
 
 
-# In[ ]:
+# In[21]:
 
 
-import winsound
-
-# Beep sencillo: frecuencia 1 kHz durante 500 ms
-
-def hacer_sonido():
-    winsound.Beep(1000, 1300)
-
-hacer_sonido()
+df2
 
 
-# In[ ]:
+# In[15]:
 
 
 import overpy
@@ -576,7 +595,7 @@ result = api.query(query)
 calles_villa_maria = sorted({ way.tags["name"] for way in result.ways if "name" in way.tags })
 
 
-# In[ ]:
+# In[16]:
 
 
 api = overpy.Overpass()
